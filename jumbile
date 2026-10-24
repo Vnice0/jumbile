@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字时代的群体性孤独</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    
+    <style>
+        /* ==========================================
+           背景设置：全屏铺满你提供的图片
+           ========================================== */
+        body {
+            background-image: url('bg.jpg'); /* 确保你的图片命名为 bg.jpg 并上传 */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* 添加一层深色遮罩，让背景变暗，确保文字能看清 */
+        .reveal::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.8); /* 80%透明度的深黑色遮罩 */
+            z-index: -1;
+        }
+
+        .reveal { font-family: 'Courier New', Courier, monospace; }
+        
+        /* 标题字体：模仿电影里的复古、做旧红色 */
+        .reveal h1, .reveal h2 { 
+            color: #d32f2f; 
+            font-weight: 900; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            /* 轻微发光和阴影，增加立体感 */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(211, 47, 47, 0.6); 
+        }
+        
+        .reveal p { 
+            color: #d1d5db; /* 浅灰色正文，比纯白更柔和 */
+            line-height: 1.8; 
+            font-size: 0.9em; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        /* 核心高亮色改为复古红 */
+        .highlight { 
+            color: #ff5252; 
+            font-weight: bold; 
+            text-shadow: 0 0 15px rgba(255, 82, 82, 0.8);
+        }
+        
+        .big-text { 
+            font-size: 1.2em !important; 
+            color: #ffffff !important; 
+            font-weight: bold; 
+            margin-top: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 卡片式排版：改成半透明的暗色玻璃质感 */
+        .card-box { 
+            background: rgba(20, 20, 25, 0.7); /* 深色毛玻璃 */
+            backdrop-filter: blur(5px); /* 背景模糊 */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #d32f2f; /* 红色左边框 */
+            padding: 20px 30px; 
+            border-radius: 8px; 
+            text-align: left; 
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .essay-box { 
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(211, 47, 47, 0.3);
+            padding: 25px; 
+            border-radius: 12px; 
+            text-align: left; 
+            font-size: 0.8em;
+        }
+
+        /* 3D空间翻转特效 */
+        .reveal .slides {
+            perspective: 2000px; 
+        }
+        
+        .reveal .slides section {
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s ease;
+            transform-origin: center center;
+        }
+
+        .reveal .slides section.present {
+            transform: rotateX(0deg) rotateY(0deg) scale(1);
+            opacity: 1;
+        }
+
+        .reveal .slides section.future {
+            transform: rotateY(180deg) translateZ(400px) scale(0.5); 
+            opacity: 0;
+        }
+
+        .reveal .slides section.past {
+            transform: rotateY(-180deg) translateZ(400px) scale(1.5);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <section>
+                <h1 style="font-size: 2.5em;">数字时代的</h1>
+                <h1 class="highlight" style="font-size: 3.5em; margin-bottom: 40px;">“群体性孤独”</h1>
+                <p style="letter-spacing: 5px; color: #9ca3af;">WE ARE NEVER TRULY ALONE</p>
+            </section>
+
+            <section>
+                <h2>一、 现象：喧嚣中的失语</h2>
+                <div class="card-box">
+                    <p>📱 地铁里，每个人都低头看着发光的屏幕。</p>
+                    <p>🍽️ 饭桌上，家人之间用微信发着“吃饭了”。</p>
+                    <p>🌙 我们在社交媒体上有几百个“好友”，却在深夜找不到一个可以倾诉的人。</p>
+                </div>
+                <p class="big-text">麻省理工学院教授雪莉·特克尔将其定义为：“群体性孤独”</p>
+            </section>
+
+            <section>
+                <h2>二、 深思：连接的幻觉</h2>
+                <div class="card-box">
+                    <p>“我们似乎在一起，但实际上每个人都在自己的设备里，我们在期待更多来自别人的关注，却越来越不愿意付出真正的陪伴。”</p>
+                </div>
+                <p style="margin-top: 30px;">科技消解了物理距离，却构建了心理高墙。</p>
+                <p>为了安全感和控制感，我们拒绝真实的、不可控的深度交流。</p>
+            </section>
+
+            <section>
+                <h2>三、 破局：重拾真实的凝视</h2>
+                <div class="card-box">
+                    <p>技术的进步不可逆转，但人类的温度不应被算法替代。</p>
+                    <p>放下手机，看看身边人的眼睛。</p>
+                    <p>去感受一场没有“滤镜”的对话，去拥抱一个真实存在的灵魂。</p>
+                </div>
+                <p class="big-text" style="color: #ff5252 !important; margin-top: 40px;">别让“连接”，成为了“隔离”的同义词。</p>
+            </section>
+
+            <section>
+                <h2 style="font-size: 1.3em;">✨ 彩蛋：相关作文素材</h2>
+                <div class="essay-box">
+                    <p><strong style="color: #ff5252;">【适用主题】：</strong>科技与人文、人际距离、真实的沟通、反思现代生活。</p>
+                    <p style="margin-top: 15px;"><strong style="color: #ff5252;">【金句段落】：</strong></p>
+                    <p style="color: #f8fafc; font-size: 0.95em;">雪莉·特克尔警示我们：“我们似乎在一起，但实际上每个人都在自己的设备里。”科技消解了物理距离，却筑起心理高墙。屏幕里的点赞再热闹，也无法替代现实中真诚的凝视。别让虚拟的连接，成为真实情感隔离的同义词。</p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'none',
+            slideNumber: 'c/t', 
+            center: true,
+            controls: true,
+            progress: true,
+            keyboard: true,
+            touch: true
+        });
+    </script>
+</body>
+</html>
