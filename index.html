@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字时代的群体性孤独</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    
+    <style>
+        /* ==========================================
+           全局与终端 UI 设定
+           ========================================== */
+        body { background-color: #05050A; overflow: hidden; }
+        .reveal, .reveal h1, .reveal h2, .reveal p, .reveal span, .reveal div { 
+            font-family: 'Fira Code', 'Courier New', Courier, monospace; 
+        }
+        .reveal .controls { color: #00f0ff; }
+        .reveal .progress span { background: #00f0ff; box-shadow: 0 0 10px #00f0ff; } 
+        .reveal .slide-number { background-color: transparent; color: #00f0ff; }
+
+        /* 全息四角取景框 */
+        .hud-corners::before, .hud-corners::after { content: ''; position: absolute; width: 30px; height: 30px; pointer-events: none; }
+        .hud-corners::before { top: 20px; left: 20px; border-top: 2px solid rgba(0, 240, 255, 0.4); border-left: 2px solid rgba(0, 240, 255, 0.4); }
+        .hud-corners::after { bottom: 20px; right: 20px; border-bottom: 2px solid rgba(0, 240, 255, 0.4); border-right: 2px solid rgba(0, 240, 255, 0.4); } 
+        .hud-corners-inner::before, .hud-corners-inner::after { content: ''; position: absolute; width: 30px; height: 30px; pointer-events: none; }
+        .hud-corners-inner::before { top: 20px; right: 20px; border-top: 2px solid rgba(0, 85, 255, 0.3); border-right: 2px solid rgba(0, 85, 255, 0.3); }
+        .hud-corners-inner::after { bottom: 20px; left: 20px; border-bottom: 2px solid rgba(0, 85, 255, 0.3); border-left: 2px solid rgba(0, 85, 255, 0.3); }
+
+        /* ==========================================
+           开机特效 (首页)
+           ========================================== */
+        .boot-scanner { position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #00f0ff; box-shadow: 0 0 20px #00f0ff; transform: scaleX(0); animation: scanEffect 1.2s forwards; z-index: 100; }
+        @keyframes scanEffect { 0% { transform: scaleX(0); opacity: 1; } 50% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+
+        .boot-reticle { position: absolute; top: 50%; left: 50%; width: 40vw; height: 40vw; border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 50%; transform: translate(-50%, -50%) scale(0); animation: reticleExpand 2s 0.5s forwards; pointer-events: none; z-index: -1; }
+        .boot-reticle::before { content: ''; position: absolute; top: 50%; left: 50%; width: 90%; height: 90%; border: 2px dashed rgba(0, 85, 255, 0.4); border-radius: 50%; transform: translate(-50%, -50%); animation: spin 20s linear infinite; }
+        @keyframes reticleExpand { 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; } }
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        .boot-title { opacity: 0; filter: blur(20px); transform: scale(1.1); animation: focusIn 1.5s 0.8s forwards; }
+        @keyframes focusIn { 100% { opacity: 1; filter: blur(0); transform: scale(1); letter-spacing: 2px; } }
+
+        .typewriter { overflow: hidden; border-right: .15em solid #00f0ff; white-space: nowrap; margin: 0 auto; letter-spacing: .15em; animation: typing 2s steps(30, end), blink-caret .75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #00f0ff } }
+
+        /* ==========================================
+           核心代码风排版 (内页，加大字号和行距)
+           ========================================== */
+        .reveal h2 { 
+            color: #fff; font-size: 1.4em; text-align: left; 
+            border-left: 4px solid #00f0ff; padding-left: 15px; margin-bottom: 20px; 
+        }
+        .log-tag { color: #00f0ff; font-size: 0.7em; margin-right: 10px; font-weight: normal; }
+
+        /* 终端黑框 - 稍微加宽加大 */
+        .code-window {
+            background: #0d1117; 
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px 25px;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
+            margin-top: 15px;
+            font-size: 1.05em; /* 字体调大，方便阅读 */
+            line-height: 1.8;  /* 行距拉大，解释更清晰 */
+        }
+        
+        /* 顶部三个小圆点 */
+        .window-dots { position: absolute; top: 10px; right: 15px; display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+
+        /* 代码行 */
+        .code-line { display: flex; margin-bottom: 6px; }
+        .line-num { color: #484f58; width: 30px; text-align: right; padding-right: 15px; user-select: none; border-right: 1px solid #30363d; margin-right: 15px; }
+        .line-content { color: #c9d1d9; flex: 1; }
+        
+        /* 语法高亮颜色 */
+        .hl-kw { color: #ff7b72; } /* 关键字红 */
+        .hl-str { color: #a5d6ff; } /* 字符串蓝 */
+        .hl-fn { color: #d2a8ff; } /* 函数紫 */
+        .hl-var { color: #79c0ff; } /* 变量蓝 */
+        .hl-com { color: #8b949e; font-style: italic; } /* 注释灰 (用来写大段解释) */
+        .hl-tag { color: #7ee787; } /* 标签绿 */
+        
+        /* 终端输出特殊色 */
+        .term-info { color: #79c0ff; }
+        .term-warn { color: #e3b341; }
+        .term-err { color: #ff7b72; }
+
+        /* 呼吸背景 */
+        .ai-ambient { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; height: 70vw; background: radial-gradient(circle, rgba(0,240,255,0.05) 0%, transparent 60%); border-radius: 50%; z-index: -2; animation: aiPulse 4s infinite alternate; }
+        @keyframes aiPulse { 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
+
+        /* 底部水印 */
+        .system-watermark { position: absolute; bottom: 10px; left: 30px; font-size: 0.6em; color: #484f58; }
+        .blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- 第一页：开机封面 -->
+            <section class="hud-corners hud-corners-inner">
+                <div class="ai-ambient"></div>
+                <div class="boot-scanner"></div>
+                <div class="boot-reticle"></div>
+                
+                <div style="text-align: center;">
+                    <p style="color: #8b949e; font-size: 0.8em; text-align: left; margin-bottom: 10px;">// Engine: DeepSeek-V4-Pro [Vision Enabled] // Initializing...</p>
+                    <h1 class="typewriter" style="font-size: 1.5em; color: #A0A0B0; margin-bottom: 20px; border-right-color: #A0A0B0;">> target: 数字时代的</h1>
+                    <div class="boot-title"><h1 style="background: linear-gradient(135deg, #00f0ff, #0055ff); -webkit-background-clip: text; color: transparent; font-size: 3em;">"群体性孤独"</h1></div>
+                    <p style="letter-spacing: 3px; color: #00f0ff; margin-top: 30px; font-size: 0.8em;">[ SYSTEM ONLINE: WE ARE NEVER TRULY ALONE ]</p>
+                </div>
+            </section>
+
+            <!-- 第二页：现象解析 (增加注释解释) -->
+            <section class="hud-corners hud-corners-inner">
+                <div class="ai-ambient"></div>
+                <h2><span class="log-tag">[ LOG_01 ]</span> 现象：喧嚣中的失语</h2>
+                
+                <div class="code-window">
+                    <div class="window-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+                    <!-- 加入详细的注释解释 -->
+                    <div class="code-line">
+                        <div class="line-num">1</div>
+                        <div class="line-content"><span class="hl-com">/* </span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">2</div>
+                        <div class="line-content"><span class="hl-com"> * 科技虽然打破了空间限制，让我们随时随地能联系彼此，</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">3</div>
+                        <div class="line-content"><span class="hl-com"> * 但却让“身体在场，精神缺席”成为了常态。</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">4</div>
+                        <div class="line-content"><span class="hl-com"> * 我们在虚拟世界高谈阔论，却在现实饭桌上相顾无言。</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">5</div>
+                        <div class="line-content"><span class="hl-com"> */</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">6</div>
+                        <div class="line-content"><span class="hl-kw">const</span> <span class="hl-var">status</span> = {</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">7</div>
+                        <div class="line-content">  <span class="hl-tag">地铁场景</span>: <span class="hl-str">"全员低头看屏幕"</span>,</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">8</div>
+                        <div class="line-content">  <span class="hl-tag">家庭饭桌</span>: <span class="hl-str">"用微信发'吃饭了'"</span>,</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">9</div>
+                        <div class="line-content">  <span class="hl-tag">深夜社交</span>: <span class="term-err">"500+好友，0人倾诉"</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">10</div>
+                        <div class="line-content">};</div>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; font-size: 0.95em; text-align: left; color: #8b949e;">
+                    <span class="hl-com">// 定义：</span><span class="hl-str">"我们从未如此紧密，也从未如此疏离。"</span>
+                </p>
+            </section>
+
+            <!-- 第三页：深思解析 (增加长句拆解) -->
+            <section class="hud-corners hud-corners-inner">
+                <div class="ai-ambient"></div>
+                <h2><span class="log-tag">[ LOG_02 ]</span> 深思：连接的幻觉</h2>
+                
+                <div class="code-window">
+                    <div class="window-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+                    <div class="code-line">
+                        <div class="line-num">11</div>
+                        <div class="line-content"><span class="hl-fn">function</span> <span class="hl-var">analyzeConnection</span>() {</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">12</div>
+                        <div class="line-content">  <span class="hl-com">// 麻省理工学院教授雪莉·特克尔指出：</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">13</div>
+                        <div class="line-content">  <span class="hl-com">// 科技带来的是“连接的幻觉”。</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">14</div>
+                        <div class="line-content">  <span class="hl-com">// 我们期待更多关注，却越来越吝啬付出真实的陪伴。</span></div>
+                    </div>
+                    <div class="code-line" style="background: rgba(255, 123, 114, 0.1);">
+                        <div class="line-num" style="color:#ff7b72;">-</div>
+                        <div class="line-content"><span class="hl-var">distance</span> = <span class="hl-str">"物理距离已被科技消解 (好)"</span>;</div>
+                    </div>
+                    <div class="code-line" style="background: rgba(126, 231, 135, 0.1);">
+                        <div class="line-num" style="color:#7ee787;">+</div>
+                        <div class="line-content"><span class="hl-var">distance</span> = <span class="hl-str">"心理高墙已被构建 (坏)"</span>;</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">15</div>
+                        <div class="line-content">  <span class="hl-kw">return</span> <span class="term-err">"永远在线，却拒绝深度交流"</span>;</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">16</div>
+                        <div class="line-content">}</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 第四页：破局解析 (增加深刻解释) -->
+            <section class="hud-corners hud-corners-inner">
+                <div class="ai-ambient"></div>
+                <h2><span class="log-tag">[ LOG_03 ]</span> 破局：重拾真实的凝视</h2>
+                
+                <div class="code-window">
+                    <div class="window-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+                    <div class="code-line">
+                        <div class="line-num">17</div>
+                        <div class="line-content"><span class="hl-com">// 破局之道在于：打破算法和屏幕的桎梏。</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">18</div>
+                        <div class="line-content"><span class="hl-com">// 技术不可逆，但人的温度不能被替代。</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">19</div>
+                        <div class="line-content"><span class="hl-fn">system</span>.<span class="hl-fn">replace</span>(<span class="hl-str">"算法"</span>, <span class="hl-str">"人类的温度"</span>);</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">20</div>
+                        <div class="line-content"><span class="hl-kw">await</span> <span class="hl-var">human</span>.<span class="hl-fn">look</span>(<span class="hl-str">"放下手机，看看身边人的眼睛"</span>);</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">21</div>
+                        <div class="line-content"><span class="hl-kw">await</span> <span class="hl-var">human</span>.<span class="hl-fn">embrace</span>(<span class="hl-str">"感受一场没有'滤镜'的对话"</span>);</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">22</div>
+                        <div class="line-content"><span class="hl-kw">await</span> <span class="hl-var">human</span>.<span class="hl-fn">embrace</span>(<span class="hl-str">"拥抱真实存在的灵魂"</span>);</div>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; font-size: 1.1em; color: #00f0ff; text-align: center; font-weight: bold; text-shadow: 0 0 10px rgba(0,240,255,0.4);">
+                    > ALERT: 别让“连接”，成为了“隔离”的同义词 //
+                </p>
+            </section>
+
+            <!-- 第五页：素材 (保留 JSON，增加细节) -->
+            <section class="hud-corners hud-corners-inner">
+                <div class="ai-ambient"></div>
+                <h2><span class="log-tag">[ DATA ]</span> 附加：作文素材数据库</h2>
+                
+                <div class="code-window">
+                    <div class="window-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+                    <div class="code-line">
+                        <div class="line-num">1</div>
+                        <div class="line-content">{</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">2</div>
+                        <div class="line-content">  <span class="hl-tag">"适用主题"</span>: [</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">3</div>
+                        <div class="line-content">    <span class="hl-str">"科技与人文的冲突"</span>,</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">4</div>
+                        <div class="line-content">    <span class="hl-str">"现代人的社交困境"</span>,</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">5</div>
+                        <div class="line-content">    <span class="hl-str">"真实的沟通"</span>,</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">6</div>
+                        <div class="line-content">    <span class="hl-str">"反思现代生活"</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">7</div>
+                        <div class="line-content">  ],</div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">8</div>
+                        <div class="line-content">  <span class="hl-tag">"金句段落"</span>: <span class="hl-str">"雪莉·特克尔警示我们：'我们似乎在一起，但实际上每个人都在自己的设备里。'科技消解了物理距离，却筑起心理高墙。屏幕里的点赞再热闹，也无法替代现实中真诚的凝视。别让虚拟的连接，成为真实情感隔离的同义词。"</span></div>
+                    </div>
+                    <div class="code-line">
+                        <div class="line-num">9</div>
+                        <div class="line-content">}</div>
+                    </div>
+                </div>
+
+                <div class="system-watermark">
+                    // Generated by DeepSeek-V4-Pro [Multimodal] // Status: Online<span class="blink">_</span>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'zoom', 
+            transitionSpeed: 'slow',
+            slideNumber: 'c/t', 
+            center: true,
+            controls: true,
+            progress: true,
+            keyboard: true,
+            touch: true
+        });
+    </script>
+</body>
+</html>
